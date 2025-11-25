@@ -16,7 +16,17 @@ class Dll:
         self.tail=None
     
     def insert(self,data: Any):
-        pass
+        if not self.size:
+            self.head=Node(data)
+            self.tail=self.head
+        new_node=Node(data)
+        new_node.l_ptr=self.head
+        self.head.r_ptr=new_node
+        self.head=new_node
+        
+        
+            
+            
          
     def delete():
         pass
