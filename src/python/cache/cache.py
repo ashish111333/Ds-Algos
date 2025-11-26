@@ -11,7 +11,7 @@ class CacheItem:
 
     
 class Node:
-    def __init__(self,data: Any):
+    def __init__(self,data: CacheItem):
         self.data=data
         self.l_ptr: Node=None
         self.r_ptr: Node=None
@@ -55,22 +55,34 @@ class Dll:
     
     
 # Lru cache 
-# key is mapped to a ddl node 
-# each node will have cacheItem (see the implementation above) as data
+# key is mapped to a ddl node each node will have cacheItem (see the implementation above) as data
 # Time complexity of accessing any cache item will be O(1) same for deletion
-# for set operation will add other item to head of ddl
+# for set operation will add the new cacheItem after  head and set head to this new item
         
 class LruCache:
     ignore_ttl=True
     max_size=None
-    size=0
+    
     def __init__(self,max_size: int):
         self.cache_data: Dict[any,Node]={}
         self.max_size=max_size
         self.ddl=Dll()
     
-    def set(self,key: any,ci: CacheItem):
-        pass
+    def set(self,key: Any,ci: CacheItem):
+        node=self.ddl.insert(ci)
+        self.cache_data[key]=node
+            
         
-       
+    def get(self,key: Any):
+        return self.cache_data.get(key)
+        
+    def delete(self,key: Any):
+       pass 
+        
+    def empty_cache(self):
+        self.cache_data.clear()
+        
+    @property
+    def size(self):
+        return len(self.cache_data)
     
