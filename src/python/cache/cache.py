@@ -53,7 +53,7 @@ class Dll:
         
     # move a node to head useful for LRU
     def move_to_head(self):
-        
+        pass
     
     @property
     def is_empty(self)->bool:
