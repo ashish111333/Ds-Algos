@@ -1,4 +1,4 @@
-# LRU cache and MRU cache 
+# LRU cache 
 
 from typing import Any,Dict
 
@@ -44,7 +44,17 @@ class Dll:
         r_node.l_ptr=l_node
         node.l_ptr=None
         node.r_ptr=None
+        self.size-=1
+    
+    def clear(self):
+        self.head=None
+        self.tail=None
+        self.size=0
         
+    # move a node to head useful for LRU
+    def move_to_head(self):
+        
+    
     @property
     def is_empty(self)->bool:
         if not self.size:
@@ -57,10 +67,9 @@ class Dll:
 # Lru cache 
 # key is mapped to a ddl node each node will have cacheItem (see the implementation above) as data
 # Time complexity of accessing any cache item will be O(1) same for deletion
-# for set operation will add the new cacheItem after  head and set head to this new item
-        
+
 class LruCache:
-    ignore_ttl=True
+    
     max_size=None
     
     def __init__(self,max_size: int):
@@ -77,11 +86,12 @@ class LruCache:
         return self.cache_data.get(key)
         
     def delete(self,key: Any):
-       pass 
+       self.cache_data.pop(key) 
         
     def empty_cache(self):
         self.cache_data.clear()
-        
+        self.ddl.clear()
+    
     @property
     def size(self):
         return len(self.cache_data)
