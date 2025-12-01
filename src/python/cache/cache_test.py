@@ -1,0 +1,24 @@
+from cache import Dll,CacheItem,Node
+
+
+def test_dll():
+    new_dll=Dll()
+    cach_items=[CacheItem(3),CacheItem(2),CacheItem(1)]
+    nodes=[]
+    for ci in cach_items:
+        nodes.append(new_dll.insert(ci)) 
+        head_node=new_dll.head 
+        assert ci.value==head_node.data.value
+    
+    assert  new_dll.size==len(cach_items)
+    assert new_dll.tail is nodes[0]
+    assert new_dll.head is nodes[2] 
+
+    new_dll.delete(nodes[2])
+    assert new_dll.head is nodes[1]
+    new_dll.delete(nodes[0])
+    assert new_dll.size==1
+    
+
+    
+           
