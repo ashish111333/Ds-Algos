@@ -3,13 +3,12 @@
 from typing import Any,Dict
 
 class CacheItem():
-    def __init__(self,value: Any,ttl: int=None):
+    def __init__(self,value: Any,ttl: int=None,key: Any=None):
         self.value=value
         self.ttl=ttl
+        self.key=key
 
 
-
-    
 class Node():
     def __init__(self,data: CacheItem):
         self.data=data
@@ -70,12 +69,15 @@ class Dll:
     # move a existing node to head, useful for LRU.
     def shift_to_head(self,node: Node):
         if node is self.tail:
-            r_node=node.r_ptr
-            r_node.l_ptr=None
-            self.tail.l_ptr=self.head
-            self.tail.r_ptr=None
-            self.tail=r_node
-            self.head=node
+           r_node=node.r_ptr
+           r_node.l_ptr=None
+           self.tail=r_node
+           self.head.r_ptr=node
+           node.l_ptr=self.head
+           node.r_ptr=None
+           self.head=node
+           return
+            
         if  node is self.head:
             return
             
@@ -102,33 +104,56 @@ class Dll:
 # key is mapped to a ddl node each node will have cacheItem (see the implementation above) as data.
 # Time complexity of accessing any cache item will be O(1) same for deletion
 
+
 class LruCache():
     
-    max_size=None
+    max_size=10
     
     def __init__(self,max_size: int):
         self.cache_data: Dict[any,Node]={}
         self.max_size=max_size
         self.ddl=Dll()
-    
-    def set(self,key: Any,ci: CacheItem):
+        
+    # evict the least recently used item if cache size exceeds max size
+    def set(self,key: Any,data: Any):
+        if self.size==self.max_size:
+            tail_node=self.ddl.tail
+            self.cache_data.pop(self.ddl.tail.data.key)
+            self.ddl.delete(tail_node)
+        
+        ci=CacheItem(data,key=key)    
         node=self.ddl.insert(ci)
         self.cache_data[key]=node
             
         
     def get(self,key: Any):
-        
-        return self.cache_data.get(key)
+        val=self.cache_data.get(key)
+        if val:
+            self.ddl.shift_to_head(val)
+            return val.data.value
+            
+        return None
 
         
     def delete(self,key: Any):
-       self.cache_data.pop(key) 
-        
+       dll_node=self.cache_data.get(key)
+       
+       if not dll_node:
+           return
+       self.cache_data.pop(key)
+       self.ddl.delete(dll_node)
+       
+    
     def empty_cache(self):
         self.cache_data.clear()
         self.ddl.clear()
-    
+
+        
     @property
     def size(self):
         return len(self.cache_data)
+  
+        
+        
+        
     
