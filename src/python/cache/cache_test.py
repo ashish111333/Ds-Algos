@@ -1,4 +1,4 @@
-from cache import Dll,CacheItem,Node
+from cache import Dll,CacheItem,Node,LruCache
 
 
 def test_dll():
@@ -36,11 +36,31 @@ def test_dll():
     assert dll2.head is nodes[1]
     assert dll2.tail is nodes[2]
     assert dll2.size==3 
+    dll2.shift_to_head(dll2.tail)
+    assert dll2.head is nodes[2]
+    assert dll2.tail is nodes[0]
+    assert dll2.size==3
     
     
-    
+def test_lru_Cache():
+    new_cache=LruCache(3)
+    new_cache.set("a",1)
+    new_cache.set("b",2)
+    new_cache.set("c",3)
+    assert new_cache.size==3
+    assert new_cache.max_size==3
+    assert new_cache.get("a")==1
+    assert new_cache.get("b")==2
+    assert new_cache.get("c")==3
+
     
     
 
     
+
+    
+    
+    
+
+
            
