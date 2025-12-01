@@ -2,20 +2,20 @@
 
 from typing import Any,Dict
 
-class CacheItem:
-    def __init(self,value: Any,ttl: int):
+class CacheItem():
+    def __init__(self,value: Any,ttl: int=None):
         self.value=value
         self.ttl=ttl
 
 
 
     
-class Node:
+class Node():
     def __init__(self,data: CacheItem):
         self.data=data
         self.l_ptr: Node=None
         self.r_ptr: Node=None
-        
+    
 
 # doubly linked list        
 class Dll:
@@ -25,10 +25,13 @@ class Dll:
         self.tail: Node=None
     
     def insert(self,data: Any):
-        if not self.size:
-            self.head=Node(data)
+        if not self.head:
+            new_node=Node(data)
+            self.head=new_node
             self.tail=self.head
             self.size+=1
+            return new_node
+        
         new_node=Node(data)
         new_node.l_ptr=self.head
         self.head.r_ptr=new_node
@@ -38,6 +41,19 @@ class Dll:
     
     
     def delete(self,node: Node):
+        if node is self.head:
+            l_node=self.head.l_ptr
+            l_node.r_ptr=None
+            self.head=l_node
+            self.size-=1
+            return 
+        if node is self.tail:
+            r_node=self.tail.r_ptr
+            r_node.l_ptr=None
+            self.tail=r_node
+            self.size-=1
+            return
+ 
         l_node=node.l_ptr
         r_node=node.r_ptr
         l_node.r_ptr=r_node
@@ -51,24 +67,42 @@ class Dll:
         self.tail=None
         self.size=0
         
-    # move a node to head useful for LRU
-    def move_to_head(self):
-        pass
-    
+    # move a existing node to head, useful for LRU.
+    def shift_to_head(self,node: Node):
+        if node is self.tail:
+            r_node=node.r_ptr
+            r_node.l_ptr=None
+            self.tail.l_ptr=self.head
+            self.tail.r_ptr=None
+            self.tail=r_node
+            self.head=node
+        if  node is self.head:
+            return
+            
+            
+        l_node=node.l_ptr
+        r_node=node.r_ptr
+        l_node.r_ptr=r_node
+        r_node.l_ptr=l_node
+        node.r_ptr=None
+        node.l_ptr=self.head
+        self.head=node
+        
+
     @property
     def is_empty(self)->bool:
         if not self.size:
             return True
     
-            
+
             
     
     
 # Lru cache 
-# key is mapped to a ddl node each node will have cacheItem (see the implementation above) as data
+# key is mapped to a ddl node each node will have cacheItem (see the implementation above) as data.
 # Time complexity of accessing any cache item will be O(1) same for deletion
 
-class LruCache:
+class LruCache():
     
     max_size=None
     
