@@ -52,8 +52,10 @@ def test_lru_Cache():
     assert new_cache.get("a")==1
     assert new_cache.get("b")==2
     assert new_cache.get("c")==3
-
-    
+    new_cache.delete("c")
+    assert new_cache.size==2
+    new_cache.empty_cache()
+    assert new_cache.size==0
     
 
     
